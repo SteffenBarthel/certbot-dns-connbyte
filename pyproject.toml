@@ -23,6 +23,8 @@ classifiers = [
 [project.urls]
 Homepage = "https://connbyte.com/"
 "API documentation" = "https://api.connbyte.com/"
+Repository = "https://github.com/SteffenBarthel/certbot-dns-connbyte"
+Issues = "https://github.com/SteffenBarthel/certbot-dns-connbyte/issues"
 
 [project.entry-points."certbot.plugins"]
 dns-connbyte = "certbot_dns_connbyte.dns_connbyte:Authenticator"
