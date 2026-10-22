@@ -84,5 +84,6 @@ def _relative_name(fqdn: str, zone: str) -> str:
     fqdn = fqdn.rstrip(".").lower()
     zone = zone.rstrip(".").lower()
     if fqdn == zone:
-        return ""
+        # The API rejects an empty name and uses "@" for the zone apex (CNAME delegation).
+        return "@"
     return fqdn[: -(len(zone) + 1)]
