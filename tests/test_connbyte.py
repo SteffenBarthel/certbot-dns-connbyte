@@ -80,7 +80,8 @@ def test_empty_token():
 @pytest.mark.parametrize("fqdn,zone,want", [
     ("_acme-challenge.www.example.com", "example.com", "_acme-challenge.www"),
     ("_acme-challenge.example.com.", "example.com", "_acme-challenge"),
-    ("example.com", "example.com", ""),
+    ("example.com", "example.com", "@"),
+    ("Example.COM.", "example.com", "@"),
 ])
 def test_relative_name(fqdn, zone, want):
     assert _relative_name(fqdn, zone) == want
@@ -112,6 +113,13 @@ def test_authenticator_perform_and_cleanup(api, tmp_path):
     deletes = [r.json() for r in api.request_history if r.path == "/ns/record/delete"]
     assert deletes == [{"zoneId": "01ZONEB", "recordId": 7}]
 
+
+def test_authenticator_zone_apex_uses_at(api, tmp_path):
+    api.post(API + "/ns/record/create", json=ok("/ns/record/create", {"id": 8, "record": "sub.example.com"}))
+    auth = make_authenticator(tmp_path)
+    auth._perform("www.example.org", "sub.example.com", "tok")
+    create = [r.json() for r in api.request_history if r.path == "/ns/record/create"][0]
+    assert create["zoneId"] == "01ZONEB" and create["name"] == "@"
 
 def test_authenticator_perform_error(api, tmp_path):
     api.post(API + "/ns/record/create", status_code=403, json={
